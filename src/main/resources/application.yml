@@ -6,6 +6,10 @@ spring:
     password: bootuser
 ---
 spring:
+  profiles:
+    include: oauth
+---
+spring:
   jpa:
     hibernate:
       ddl-auto: update
@@ -33,5 +37,5 @@ spring:
 
 logging:
   level:
-    org.springframework.security.web: trace
-    org.zerock: debug
+    org.springframework.security.web: info
+    org.zerock: info

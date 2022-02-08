@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.zerock.club.security.handler.ClubLoginSuccessHandler;
 
 @Configuration
 @Slf4j
@@ -41,16 +42,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 경우에 따라 CSRF 토큰 발행하지 않는 경우도 있음
         http.csrf().disable();
 
+        http.oauth2Login().successHandler(successHandler());
+
         // 스프링 시큐리티가 제공하는 기본 로그아웃 페이지 적용
         // logoutUrl(), logoutSuccessUrl() 등으로 별도 로그아웃 관련 설정 추가 가능
         // 스프링 시큐리티는 기본적으로 HttpSession 을 이용하는데,
         // invalidatedHttpSession(), deleteCookies() 로 쿠키, 세션 무효화 가능
-        http.logout();
+//        http.logout();
+    }
+
+    @Bean
+    public ClubLoginSuccessHandler successHandler(){
+        return new ClubLoginSuccessHandler(passwordEncoder());
     }
 
 //    @Override
 //    // authenticationManager 설정 쉽게 처리할 수 있도록 도와주는 configure() 메서드 오버라이딩
 //    // 파라미터로 사용된 Auth~~ManagerBuilder 는 말 그대로 코드를 통해서 직접 인증 매니저를 설정할 때 사용
+//    //--------------> ClubUserDetailService 로 대체
 //    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 //
 //        //사용자 계정은 user1

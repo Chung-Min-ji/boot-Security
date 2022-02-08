@@ -23,6 +23,7 @@ public class ClubUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+        // 별도 처리 없이 loadUserByUsername() 에서 로그 기록
         log.info("\t ++ ClubUserDetailsService loadUserByUsername : " + username);
 
         Optional<ClubMember> result = clubMemberRepository.findByEmail(username, false);
@@ -42,6 +43,10 @@ public class ClubUserDetailService implements UserDetailsService {
                 clubMember.getPassword(),
                 clubMember.isFromSocial(),
                 clubMember.getRoleSet().stream()
+                        // 스프링 시큐리티에서 사용하는 SimpleGrantedAuthority 로 변환.
+                        // 'ROLE_' 이라는 접두어 추가해서 사용.
+                        // (스프링 시큐리티에서 모든 역할에는, 역할임을 식별하기 위해 'ROLE_' 접두어가 붙어야 함)
+                        // 'ROLE_USER' 는 'hasRole("USER")' 와 같음
                         .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).collect(Collectors.toSet())
         );
 
