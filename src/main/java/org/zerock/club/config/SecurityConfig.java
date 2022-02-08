@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,6 +14,13 @@ import org.zerock.club.security.service.ClubUserDetailsService;
 
 @Configuration
 @Slf4j
+
+//-- 2) 어노테이션 기반의 접근 제한 설정할 수 있도록 하는 설정.
+// 일반적으로 SecurityConfig 와 같이 시큐리티 관련 설정 클래스에 붙임.
+//      prePostEnable : @PreAuthorize 이용하기 위해 사용 (컨트롤러에서)
+//                      @PreAuthorize() 의 value 로는 문자열로 된 표현식을 넣는다.
+//      securedEnabled : 예전 버전의 @Secure 어노테이션 사용 가능한지 지정
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     //-- Remember me 설정 1.
@@ -31,11 +39,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // 하는 방법이 있는데, 아래 예시는 Config 클래스에서 설정하는 예시
     protected void configure(HttpSecurity http) throws Exception{
 
-        // http.authorizeRequests() 로 인증이 필요한 리소스를 설정할 수 있고,
-        http.authorizeRequests()
-                // antMatchers()는 **/* 와 같은 앤트 스타일 패턴으로 원하는 리소스를 선택할 수 있음
-                .antMatchers("/sample/all").permitAll()
-                .antMatchers("/sample/member").hasRole("USER");
+//        //-- 1) 설정을 통한 패턴 지정
+//        //http.authorizeRequests() 로 인증이 필요한 리소스를 설정할 수 있고,
+//        http.authorizeRequests()
+//                // antMatchers()는 **/* 와 같은 앤트 스타일 패턴으로 원하는 리소스를 선택할 수 있음
+//                .antMatchers("/sample/all").permitAll()
+//                .antMatchers("/sample/member").hasRole("USER");
 
         // 인가, 인증 문제시 로그인 화면
         // 별도의 로그인 페이지는 loginPage() 로 설정할 수 있고,
