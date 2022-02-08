@@ -1,18 +1,23 @@
 package org.zerock.club.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.zerock.club.security.handler.ClubLoginSuccessHandler;
+import org.zerock.club.security.service.ClubUserDetailsService;
 
 @Configuration
 @Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    //-- Remember me 설정 1.
+    @Autowired
+    private ClubUserDetailsService userDetailsService;
 
     @Bean
     PasswordEncoder passwordEncoder(){
@@ -44,6 +49,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.oauth2Login().successHandler(successHandler());
 
+        //-- Remember me 설정 2.
+        // 이 설정을 하면 로그인 화면에 Remember me 체크박스 출력됨
+        // rememberMe 체크하고 로그인하면 remember-me 라는 쿠키 생성됨.
+        // 단, 소셜 로그인(oAuth) 에서는 적용되지 않음
+        http.rememberMe().tokenValiditySeconds(60*60*24*7)
+                .userDetailsService(userDetailsService); //7Days
+
         // 스프링 시큐리티가 제공하는 기본 로그아웃 페이지 적용
         // logoutUrl(), logoutSuccessUrl() 등으로 별도 로그아웃 관련 설정 추가 가능
         // 스프링 시큐리티는 기본적으로 HttpSession 을 이용하는데,
@@ -59,7 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //    @Override
 //    // authenticationManager 설정 쉽게 처리할 수 있도록 도와주는 configure() 메서드 오버라이딩
 //    // 파라미터로 사용된 Auth~~ManagerBuilder 는 말 그대로 코드를 통해서 직접 인증 매니저를 설정할 때 사용
-//    //--------------> ClubUserDetailService 로 대체
+//    //--------------> ClubuserDetailsService 로 대체
 //    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 //
 //        //사용자 계정은 user1
